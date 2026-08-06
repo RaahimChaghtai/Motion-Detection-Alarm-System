@@ -1,8 +1,15 @@
 import threading
 import subprocess
+from datetime import datetime
+from pathlib import Path
 
 import cv2
 import imutils
+
+CAPTURES_DIR = Path(__file__).resolve().parent / "captures"
+ALARM_SOUND = Path(__file__).resolve().parent / "resources" / "mixkit-classic-alarm-995.wav"
+
+CAPTURES_DIR.mkdir(exist_ok=True)
 
 capture = cv2.VideoCapture(0)
 
@@ -24,6 +31,14 @@ alarm = False
 alarm_mode = False
 alarm_counter = 0
 
+
+def save_snapshot(frame):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = CAPTURES_DIR / f"motion_{timestamp}.jpg"
+    cv2.imwrite(str(path), frame)
+    print(f"Saved snapshot: {path}")
+
+
 def beep_alarm():
     global alarm
 
@@ -31,8 +46,9 @@ def beep_alarm():
         if not alarm_mode:
             break
         print("ALARM!!!")
-        subprocess.run(["afplay", "resources/mixkit-classic-alarm-995.wav"])
+        subprocess.run(["afplay", str(ALARM_SOUND)])
     alarm = False
+
 
 print("Camera ready. Press 't' to arm, 'q' to quit. Click the Cam window first.")
 
@@ -66,6 +82,7 @@ while True:
     if alarm_counter > 20:
         if not alarm:
             alarm = True
+            save_snapshot(frame)
             threading.Thread(target=beep_alarm).start()
 
     key_pressed = cv2.waitKey(30)
