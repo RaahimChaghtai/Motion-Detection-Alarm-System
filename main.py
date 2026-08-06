@@ -68,7 +68,7 @@ while True:
         threshold = cv2.threshold(difference, 25, 255, cv2.THRESH_BINARY)[1]
         start_frame = frame_bw
 
-        if threshold.sum() > 300000:
+        if threshold.sum() > 3000:
             print(threshold.sum())
             alarm_counter += 1
         else:
