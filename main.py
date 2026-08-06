@@ -69,7 +69,6 @@ while True:
         start_frame = frame_bw
 
         if threshold.sum() > 3000:
-            print(threshold.sum())
             alarm_counter += 1
         else:
             if alarm_counter > 0:
